@@ -16,7 +16,7 @@ My private, declarative homelab environment powered by **Fedora CoreOS**, **k3s*
 
 | Component | Spec                  |
 |-----------|------------------------|
-| CPU       | AMD Ryzen H255 (chiński/OEM odpowiednik Ryzen 7 8745HS) |
+| CPU       | AMD Ryzen H255         |
 | RAM       | 16 GB DDR5             |
 | iGPU      | AMD Radeon 780M        |
 | LAN       | 2.5 Gbps                |
