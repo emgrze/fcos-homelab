@@ -1,0 +1,4 @@
+.sealed-secret.yaml*
+secret-tmp.yaml
+secret-*.yaml
+*.decrypted.yaml
