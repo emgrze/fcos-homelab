@@ -23,7 +23,7 @@ spec:
           env:
             - name: TZ
               value: "Europe/Warsaw"
-            - name: WEBPASSWORD
+            - name: FTLCONF_webserver_api_password
               valueFrom:
                 secretKeyRef:
                   name: pihole-secret
