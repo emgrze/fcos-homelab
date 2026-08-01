@@ -85,6 +85,7 @@ From that point on, adding a new user app or a new infrastructure component is *
 | App     | Description                        | Namespace | Status         |
 |---------|-------------------------------------|-----------|----------------|
 | podinfo | GitOps flow test / demo app         | `apps`    | ✅ Running (LoadBalancer, port 9898) |
+| pihole  | Network-wide ad/tracker blocking, DNS server for the LAN | `apps` | ✅ Running (LoadBalancer — DNS on port 53, web UI on port 8080) |
 
 ## 🧩 Infrastructure Components
 
@@ -124,6 +125,16 @@ The resulting `SealedSecret` is safe to publish — it can only be decrypted by 
 
 > ⚠️ The controller's private key is backed up **outside** of Git (password manager / encrypted storage). Losing it without a backup means losing the ability to decrypt any existing `SealedSecret` after a cluster rebuild.
 
+## 🕳️ Pi-hole Notes
+
+A few deployment decisions worth documenting for anyone reproducing this setup:
+
+- **Persistent storage**: `/etc/pihole` and `/etc/dnsmasq.d` are backed by a PVC (`local-path` StorageClass), so config, block lists, and query logs survive pod restarts.
+- **Port 80 conflict**: since Traefik's `svclb` DaemonSet already binds hostPort 80 on this single-node cluster, Pi-hole's web UI is exposed on port **8080** instead of 80 to avoid a scheduling conflict on the `LoadBalancer` Service.
+- **Pi-hole v6 env vars**: the `pihole/pihole` image moved to CalVer versioning with v6, which renamed most environment variables (e.g. `WEBPASSWORD` → `FTLCONF_webserver_api_password`). This deployment uses the new naming.
+- **Upstream DNS**: configured with Quad9 (`9.9.9.9`) as the upstream resolver. This will be replaced by a local Unbound instance for full recursive resolution once that's deployed.
+- **Password**: set via a `SealedSecret` following the workflow described in [Secrets Management](#-secrets-management) above.
+
 ## ✅ Prerequisites
 
 For anyone looking to reproduce this setup:
@@ -140,7 +151,7 @@ For anyone looking to reproduce this setup:
 
 This repository is under active development. Expect upcoming updates including:
 
-- 🔄 **Expanded Services**: Integration of new self-hosted applications (Pi-hole + Unbound, Home Assistant).
+- 🔄 **Expanded Services**: Unbound as a recursive upstream resolver for Pi-hole, and Home Assistant and more!
 - 📈 **Monitoring Implementation**: Advanced dashboards and alerting rules with notifications.
 - 🔒 **TLS / Ingress**: cert-manager + domain-based routing for services.
 - 💾 **Persistent Storage**: StorageClass and PVC strategy for stateful apps.
