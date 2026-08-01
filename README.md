@@ -65,14 +65,22 @@ From that point on, adding a new user app or a new infrastructure component is *
 .
 ├── root-app.yaml               # bootstraps root: watches apps/
 ├── root-infra.yaml             # bootstraps root-infra: watches argocd/applications/
+├── .gitignore                  # excludes raw secrets and kubeseal temp files
 ├── apps/
-│   └── podinfo/
+│   ├── podinfo/
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   └── kustomization.yaml
+│   └── pihole/
 │       ├── deployment.yaml
 │       ├── service.yaml
+│       ├── pvc.yaml
+│       ├── sealed-secret.yaml   # encrypted WEBPASSWORD, safe to commit
 │       └── kustomization.yaml
 └── argocd/
     └── applications/
         ├── podinfo-app.yaml     # Application CR pointing at apps/podinfo
+        ├── pihole-app.yaml      # Application CR pointing at apps/pihole
         └── sealed-secrets.yaml  # Application CR (Helm chart, infra component)
 ```
 
@@ -151,7 +159,7 @@ For anyone looking to reproduce this setup:
 
 This repository is under active development. Expect upcoming updates including:
 
-- 🔄 **Expanded Services**: Unbound as a recursive upstream resolver for Pi-hole, and Home Assistant and more!
+- 🔄 **Expanded Services**: Unbound as a recursive upstream resolver for Pi-hole, and Home Assistant.
 - 📈 **Monitoring Implementation**: Advanced dashboards and alerting rules with notifications.
 - 🔒 **TLS / Ingress**: cert-manager + domain-based routing for services.
 - 💾 **Persistent Storage**: StorageClass and PVC strategy for stateful apps.
