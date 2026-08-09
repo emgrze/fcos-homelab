@@ -36,16 +36,16 @@ spec:
               mountPath: /models
       containers:
         - name: llamacpp
-          image: ghcr.io/ggml-org/llama.cpp:server-vulkan
-          args:
-            - "-m"
-            - "/models/model.gguf"
-            - "--host"
-            - "0.0.0.0"
-            - "--port"
-            - "8080"
-            - "-ngl"
-            - "999"
+          image: ghcr.io/kth8/llama-server-vulkan:latest
+          env:
+            - name: LLAMA_ARG_MODEL
+              value: "/models/model.gguf"
+            - name: LLAMA_ARG_HOST
+              value: "0.0.0.0"
+            - name: LLAMA_ARG_PORT
+              value: "8080"
+            - name: LLAMA_ARG_N_GPU_LAYERS
+              value: "999"
           ports:
             - containerPort: 8080
               name: http
