@@ -5,7 +5,7 @@ metadata:
   namespace: apps
 spec:
   rules:
-    - host: ai.local
+    - host: ai.home
       http:
         paths:
           - path: /
