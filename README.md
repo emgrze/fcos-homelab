@@ -71,16 +71,23 @@ From that point on, adding a new user app or a new infrastructure component is *
 │   │   ├── deployment.yaml
 │   │   ├── service.yaml
 │   │   └── kustomization.yaml
-│   └── pihole/
-│       ├── deployment.yaml
+│   ├── pihole/
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   ├── pvc.yaml
+│   │   ├── sealed-secret.yaml   # encrypted WEBPASSWORD, safe to commit
+│   │   └── kustomization.yaml
+│   └── llamacpp/
+│       ├── deployment.yaml       # llama.cpp server-vulkan, GPU offload via /dev/dri
 │       ├── service.yaml
-│       ├── pvc.yaml
-│       ├── sealed-secret.yaml   # encrypted WEBPASSWORD, safe to commit
+│       ├── pvc.yaml              # model storage
+│       ├── ingress.yaml          # exposed at http://ai.home via Traefik
 │       └── kustomization.yaml
 └── argocd/
     └── applications/
         ├── podinfo-app.yaml     # Application CR pointing at apps/podinfo
         ├── pihole-app.yaml      # Application CR pointing at apps/pihole
+        ├── llamacpp-app.yaml    # Application CR pointing at apps/llamacpp
         └── sealed-secrets.yaml  # Application CR (Helm chart, infra component)
 ```
 
@@ -94,6 +101,7 @@ From that point on, adding a new user app or a new infrastructure component is *
 |---------|-------------------------------------|-----------|----------------|
 | podinfo | GitOps flow test / demo app         | `apps`    | ✅ Running (LoadBalancer, port 9898) |
 | pihole  | Network-wide ad/tracker blocking, DNS server for the LAN | `apps` | ✅ Running (LoadBalancer — DNS on port 53, web UI on port 8080) |
+| llamacpp | Local LLM inference (Gemma 4 E2B) with GPU acceleration | `apps` | ✅ Running (Ingress — `http://ai.home`) |
 
 ## 🧩 Infrastructure Components
 
@@ -143,6 +151,18 @@ A few deployment decisions worth documenting for anyone reproducing this setup:
 - **Upstream DNS**: configured with Quad9 (`9.9.9.9`) as the upstream resolver. This will be replaced by a local Unbound instance for full recursive resolution once that's deployed.
 - **Password**: set via a `SealedSecret` following the workflow described in [Secrets Management](#-secrets-management) above.
 
+## 🤖 Local LLM Inference Notes
+
+Runs [llama.cpp](https://github.com/ggml-org/llama.cpp) with GPU acceleration on the Radeon 780M iGPU via the **Vulkan** backend — chosen over ROCm since Vulkan support for this GPU (RADV/Mesa) is mature and requires no unofficial workarounds, unlike the still-experimental ROCm support for gfx1103.
+
+A few things worth documenting for anyone reproducing this:
+
+- **GPU passthrough**: `/dev/dri` is passed into the container via `hostPath`, with the container running `privileged: true`. This is the simplest working setup; scoping it down to `supplementalGroups` with the host's `render` group GID instead of full `privileged` is a good future hardening step.
+- **Known bug in the official image**: `ghcr.io/ggml-org/llama.cpp:server-vulkan` fails to detect any Vulkan devices ([upstream issue](https://github.com/ggml-org/llama.cpp/issues/24651)), even though the exact same Vulkan binary works when run manually inside that same container. This deployment uses the community-maintained `ghcr.io/kth8/llama-server-vulkan` image instead, which doesn't have this issue.
+- **Shared memory budget**: the 780M uses UMA (no dedicated VRAM) — available GPU memory is whatever the BIOS allocates from system RAM, in this case only a few GB free after driver overhead. A 9B model (Qwen3.5-9B, ~5.6GB) didn't fully fit and silently fell back to partial CPU inference (~7 tok/s). Switching to **Gemma 4 E2B** (~3.1GB, Q4_K_M) fit comfortably in GPU memory and brought throughput up to **~23 tok/s**.
+- **Access**: exposed via Traefik `Ingress` at `http://ai.home` (a local DNS record added in Pi-hole), rather than a `LoadBalancer` port, to avoid consuming another dedicated IP/port and to avoid a repeat of the port 80 conflict seen with Pi-hole's web UI. Note: `.local` was tried first and didn't work — it's a reserved mDNS domain that most systems intercept before it ever reaches a normal DNS resolver.
+- **API**: OpenAI-compatible, served on the same port as the built-in web chat UI (`/v1/chat/completions`, etc.) — useful for wiring up future services like n8n.
+
 ## ✅ Prerequisites
 
 For anyone looking to reproduce this setup:
@@ -159,7 +179,8 @@ For anyone looking to reproduce this setup:
 
 This repository is under active development. Expect upcoming updates including:
 
-- 🔄 **Expanded Services**: Unbound as a recursive upstream resolver for Pi-hole, and Home Assistant.
+- 🔄 **Expanded Services**: Unbound as a recursive upstream resolver for Pi-hole, Home Assistant, n8n, Actual Budget, and eventually an *arr media stack.
+- 🧠 **LLM tooling**: wire up llamacpp's OpenAI-compatible API to other services (e.g. n8n workflows).
 - 📈 **Monitoring Implementation**: Advanced dashboards and alerting rules with notifications.
 - 🔒 **TLS / Ingress**: cert-manager + domain-based routing for services.
 - 💾 **Persistent Storage**: StorageClass and PVC strategy for stateful apps.
