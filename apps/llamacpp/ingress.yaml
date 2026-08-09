@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: llamacpp
+  namespace: apps
+spec:
+  rules:
+    - host: ai.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: llamacpp
+                port:
+                  number: 8081
