@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llamacpp
+  namespace: apps
+  labels:
+    app: llamacpp
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: llamacpp
+  template:
+    metadata:
+      labels:
+        app: llamacpp
+    spec:
+      initContainers:
+        - name: fetch-model
+          image: curlimages/curl:8.10.1
+          command:
+            - sh
+            - -c
+            - |
+              if [ ! -f /models/model.gguf ]; then
+                echo "Downloading Qwen3.5-9B Q4_K_M..."
+                curl -L -o /models/model.gguf \
+                  "https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf"
+              else
+                echo "Model already present, skipping download."
+              fi
+          volumeMounts:
+            - name: models
+              mountPath: /models
+      containers:
+        - name: llamacpp
+          image: ghcr.io/ggml-org/llama.cpp:server-vulkan
+          args:
+            - "-m"
+            - "/models/model.gguf"
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "8080"
+            - "-ngl"
+            - "999"
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts:
+            - name: models
+              mountPath: /models
+            - name: dri
+              mountPath: /dev/dri
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              cpu: "4"
+              memory: 10Gi
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: llamacpp-models
+        - name: dri
+          hostPath:
+            path: /dev/dri
+            type: Directory
