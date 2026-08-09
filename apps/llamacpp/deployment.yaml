@@ -24,13 +24,10 @@ spec:
             - sh
             - -c
             - |
-              if [ ! -f /models/model.gguf ]; then
-                echo "Downloading Qwen3.5-9B Q4_K_M..."
-                curl -L -o /models/model.gguf \
-                  "https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf"
-              else
-                echo "Model already present, skipping download."
-              fi
+              rm -f /models/model.gguf
+              echo "Downloading Gemma 4 E2B Q4_K_M..."
+              curl -L -o /models/model.gguf \
+                "https://huggingface.co/unsloth/gemma-4-E2B-it-GGUF/resolve/main/gemma-4-E2B-it-Q4_K_M.gguf"
           volumeMounts:
             - name: models
               mountPath: /models
