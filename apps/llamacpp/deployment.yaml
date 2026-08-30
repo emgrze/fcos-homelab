@@ -20,6 +20,9 @@ spec:
       initContainers:
         - name: fetch-model
           image: curlimages/curl:8.10.1
+          env:
+            - name: MODEL_URL
+              value: "https://huggingface.co/yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF/resolve/main/gemma4-coding-Q4_K_M.gguf"
           command:
             - sh
             - -c
@@ -32,10 +35,15 @@ spec:
                   rm -f /models/model.gguf
                 fi
               fi
+
+              FILENAME=$(basename "$MODEL_URL")
+              ALIAS=$(echo "$FILENAME" | sed -E 's/\.gguf$//; s/[-_]/ /g')
+              echo "$ALIAS" > /models/alias.txt
+              echo "Derived alias: $ALIAS"
+
               rm -f /models/model.gguf
-              echo "Downloading Gemma 4 E4B Uncensored Q4_K_M..."
-              curl -L --fail -o /models/model.gguf.tmp \
-                "https://huggingface.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive/resolve/main/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive-Q4_K_M.gguf"
+              echo "Downloading from $MODEL_URL..."
+              curl -L --fail -o /models/model.gguf.tmp "$MODEL_URL"
               mv /models/model.gguf.tmp /models/model.gguf
               echo "Download complete."
           volumeMounts:
@@ -44,6 +52,13 @@ spec:
       containers:
         - name: llamacpp
           image: ghcr.io/kth8/llama-server-vulkan:latest
+          command:
+            - sh
+            - -c
+            - |
+              export LLAMA_ARG_ALIAS="$(cat /models/alias.txt 2>/dev/null || echo 'Unknown Model')"
+              echo "Starting with alias: $LLAMA_ARG_ALIAS"
+              exec /llama-server
           env:
             - name: LLAMA_ARG_MODEL
               value: "/models/model.gguf"
