@@ -22,7 +22,7 @@ spec:
           image: curlimages/curl:8.10.1
           env:
             - name: MODEL_URL
-              value: "https://huggingface.co/yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF/resolve/main/gemma4-coding-Q4_K_M.gguf"
+              value: "https://huggingface.co/llmfan46/gemma-4-E2B-it-ultra-uncensored-heretic-GGUF/resolve/main/gemma-4-E2B-it-ultra-uncensored-heretic-Q8_0.gguf"
           command:
             - sh
             - -c
