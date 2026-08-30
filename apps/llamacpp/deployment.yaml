@@ -27,7 +27,7 @@ spec:
               rm -f /models/model.gguf
               echo "Downloading LLM..."
               curl -L -o /models/model.gguf \
-                "https://huggingface.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive/blob/main/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive-Q4_K_M.gguf"
+                "https://huggingface.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive/resolve/main/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive-Q4_K_M.gguf"
           volumeMounts:
             - name: models
               mountPath: /models
