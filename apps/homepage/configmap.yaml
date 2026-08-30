@@ -22,15 +22,16 @@ data:
         - ArgoCD:
             href: http://192.168.1.10:30xxx
             description: GitOps continuous delivery
-            icon: argocd.png
+            icon: argo-cd.png
         - Pi-hole:
             href: http://192.168.1.10:8080/admin
             description: Network-wide ad blocking & DNS
-            icon: pihole.png
+            icon: pi-hole.png
             widget:
               type: pihole
-              url: http://pihole.apps.svc.cluster.local
-              key: {{HOMEPAGE_VAR_PIHOLE_API_KEY}}
+              url: http://pihole.apps.svc.cluster.local:8080
+              version: 6
+              key: "{{HOMEPAGE_VAR_PIHOLE_API_KEY}}"
 
     - Services:
         - llama.cpp:
