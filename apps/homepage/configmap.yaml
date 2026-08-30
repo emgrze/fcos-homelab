@@ -36,7 +36,7 @@ data:
     - Services:
         - llama.cpp:
             href: http://ai.home
-            description: Local LLM inference (Gemma 4 E2B, GPU-accelerated)
+            description: Local LLM inference (iGPU-accelerated)
             icon: ollama.png
         - podinfo:
             href: http://192.168.1.10:9898
