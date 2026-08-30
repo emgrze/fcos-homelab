@@ -24,10 +24,20 @@ spec:
             - sh
             - -c
             - |
+              MIN_SIZE=1000000000
+              if [ -f /models/model.gguf ]; then
+                ACTUAL_SIZE=$(stat -c%s /models/model.gguf 2>/dev/null || echo 0)
+                if [ "$ACTUAL_SIZE" -lt "$MIN_SIZE" ]; then
+                  echo "Existing file too small, removing."
+                  rm -f /models/model.gguf
+                fi
+              fi
               rm -f /models/model.gguf
-              echo "Downloading LLM..."
-              curl -L -o /models/model.gguf \
+              echo "Downloading Gemma 4 E4B Uncensored Q4_K_M..."
+              curl -L --fail -o /models/model.gguf.tmp \
                 "https://huggingface.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive/resolve/main/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive-Q4_K_M.gguf"
+              mv /models/model.gguf.tmp /models/model.gguf
+              echo "Download complete."
           volumeMounts:
             - name: models
               mountPath: /models
