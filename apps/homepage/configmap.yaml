@@ -5,17 +5,24 @@ metadata:
   namespace: apps
 data:
   settings.yaml: |
-    title: Homelab Panel
+    title: FCOS-AI-homelab
     theme: dark
     color: slate
+    background:
+     image: https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=2560&q=80
+     blur: sm
+     saturate: 30
+     brightness: 50
+     opacity: 40
+    cardBlur: sm
     headerStyle: clean
     layout:
       Infrastructure:
-        style: row
-        columns: 3
+#        style: row
+#        columns: 3
       Services:
-        style: row
-        columns: 3
+#        style: row
+#        columns: 3
 
   services.yaml: |
     - Infrastructure:
