@@ -27,7 +27,7 @@ data:
   services.yaml: |
     - Infrastructure:
         - ArgoCD:
-            href: http://192.168.1.10:30xxx
+            href: http://argocd.home
             description: GitOps continuous delivery
             icon: argo-cd.png
         - Pi-hole:
