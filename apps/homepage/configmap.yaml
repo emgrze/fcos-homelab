@@ -18,10 +18,8 @@ data:
     headerStyle: clean
     layout:
       Infrastructure:
-#        style: row
         columns: 3
       Services:
-#        style: row
         columns: 3
 
   services.yaml: |
