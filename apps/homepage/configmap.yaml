@@ -19,10 +19,10 @@ data:
     layout:
       Infrastructure:
 #        style: row
-#        columns: 3
+        columns: 3
       Services:
 #        style: row
-#        columns: 3
+        columns: 3
 
   services.yaml: |
     - Infrastructure:
