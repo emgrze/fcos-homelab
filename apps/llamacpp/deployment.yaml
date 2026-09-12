@@ -27,6 +27,7 @@ spec:
             - sh
             - -c
             - |
+              set -e
               MIN_SIZE=1000000000
               if [ -f /models/model.gguf ]; then
                 ACTUAL_SIZE=$(stat -c%s /models/model.gguf 2>/dev/null || echo 0)
