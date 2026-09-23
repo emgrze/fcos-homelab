@@ -7,3 +7,5 @@ spec:
   applicationRefs:
     - namePattern: "homepage"
       useAnnotations: true
+    - namePattern: "pihole"
+      useAnnotations: true
