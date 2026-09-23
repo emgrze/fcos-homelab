@@ -79,24 +79,20 @@ From that point on, adding a new user app or a new infrastructure component is *
 │   │   ├── sealed-secret.yaml   # encrypted WEBPASSWORD, safe to commit
 │   │   └── kustomization.yaml
 │   ├── llamacpp/
-│   │   ├── deployment.yaml       # llama.cpp server-vulkan, GPU offload via /dev/dri
-│   │   ├── service.yaml
-│   │   ├── pvc.yaml              # model storage
-│   │   ├── ingress.yaml          # exposed at http://ai.home via Traefik
-│   │   └── kustomization.yaml
+│       ├── deployment.yaml       # llama.cpp server-vulkan, GPU offload via /dev/dri
+│       ├── service.yaml
+│       ├── pvc.yaml              # model storage
+│       ├── ingress.yaml          # exposed at http://ai.home via Traefik
+│       └── kustomization.yaml
 │   ├── homepage/
 │   │   ├── configmap.yaml        # settings/services/widgets, config lives entirely in Git
 │   │   ├── deployment.yaml
 │   │   ├── service.yaml
 │   │   ├── ingress.yaml          # exposed at http://panel.home
 │   │   └── kustomization.yaml
-│   ├── argocd-ingress/
-│   │   ├── ingress.yaml          # exposed at http://argocd.home
-│   │   └── kustomization.yaml
-│   └── argocd-image-updater/
-│       ├── imageupdater.yaml          # exposed at http://argocd.home
-│       ├── kustomization.yaml 
-│       └── sealed-secret.yaml
+│   └── argocd-ingress/
+│       ├── ingress.yaml          # exposed at http://argocd.home
+│       └── kustomization.yaml
 └── argocd/
     └── applications/
         ├── podinfo-app.yaml     # Application CR pointing at apps/podinfo
@@ -231,8 +227,10 @@ For anyone looking to reproduce this setup:
 
 This repository is under active development. Expect upcoming updates including:
 
-- 🔄 **Expanded Services**: Unbound as a recursive upstream resolver for Pi-hole, Home Assistant, n8n, Actual Budget, and eventually an *arr media stack.
-- 🧠 **LLM tooling**: wire up llamacpp's OpenAI-compatible API to other services (e.g. n8n workflows).
+- 🔄 **Expanded Services**: Unbound as a recursive upstream resolver for Pi-hole, Home Assistant, Actual Budget, and eventually an *arr media stack.
+- 🧠 **Agentic AI layer**: once the iGPU's shared memory budget is expanded and a larger, agent-capable model is running, wire llamacpp's OpenAI-compatible API into an agent orchestration layer — **Hermes** or **OpenClaw** — instead of a general workflow tool like n8n.
+- 📦 **NAS / Private Cloud**: a self-hosted file storage and sync service, likely backed by dedicated storage rather than `local-path`.
+- 🌍 **Remote Access**: secure access to the homelab from outside the LAN — evaluating **Tailscale** vs **Netbird**.
 - 📈 **Monitoring Implementation**: Advanced dashboards and alerting rules with notifications.
 - 🔒 **TLS / Ingress**: cert-manager + domain-based routing for services.
 - 💾 **Persistent Storage**: StorageClass and PVC strategy for stateful apps.
