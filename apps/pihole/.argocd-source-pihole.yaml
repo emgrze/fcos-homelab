@@ -1,0 +1,3 @@
+kustomize:
+  images:
+  - pihole/pihole:2026.09.0
