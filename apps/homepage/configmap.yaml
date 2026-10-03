@@ -47,6 +47,13 @@ data:
             href: http://192.168.1.10:9898
             description: GitOps demo / test app
             icon: si-cloudsmith
+        - Uptime Kuma - Docker Server Monitoring:
+            icon: uptime-kuma.png
+            href: http://192.168.1.41:3001
+            widget:
+            type: uptimekuma
+            url: http://192.168.1.41:3001
+            slug: default
 
   widgets.yaml: |
     - resources:
@@ -59,10 +66,4 @@ data:
         - GitHub Repo:
             - abbr: GH
               href: https://github.com/emgrze/fcos-homelab
-    - Uptime Kuma - Testing Server Monitoring:
-        icon: uptime-kuma.png
-        href: http://192.168.1.41:3001
-        widget:
-          type: uptimekuma
-          url: http://192.168.1.41:3001
-          slug: default
+
