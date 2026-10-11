@@ -69,6 +69,8 @@ spec:
               value: "8080"
             - name: LLAMA_ARG_N_GPU_LAYERS
               value: "999"
+            - name: LLAMA_ARG_UI_MCP_PROXY
+              value: "1"
           ports:
             - containerPort: 8080
               name: http
