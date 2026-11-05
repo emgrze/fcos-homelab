@@ -22,7 +22,7 @@ spec:
           image: curlimages/curl:8.10.1
           env:
             - name: MODEL_URL
-              value: "https://huggingface.co/FrostWolfAI/Spark-X2.6-4B-abliterated-GGUF/blob/main/Spark-X2.6-4B-abliterated-Q8_0.gguf"
+              value: "https://huggingface.co/FrostWolfAI/Spark-X2.6-4B-abliterated-GGUF/resolve/main/Spark-X2.6-4B-abliterated-Q8_0.gguf"
           command:
             - sh
             - -c
