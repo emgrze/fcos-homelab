@@ -1,0 +1,3 @@
+kustomize:
+  images:
+  - ghcr.io/kth8/llama-server-vulkan:latest@sha256:4a3e0761642464ebc51703737fd926fb302fe278fb64e4d99cbecdc05b5626f2
