@@ -9,3 +9,5 @@ spec:
       useAnnotations: true
     - namePattern: "pihole"
       useAnnotations: true
+    - namePattern: "llamacpp"
+      useAnnotations: true

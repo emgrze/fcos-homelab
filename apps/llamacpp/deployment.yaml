@@ -29,23 +29,25 @@ spec:
             - |
               set -e
               MIN_SIZE=1000000000
-              if [ -f /models/model.gguf ]; then
-                ACTUAL_SIZE=$(stat -c%s /models/model.gguf 2>/dev/null || echo 0)
-                if [ "$ACTUAL_SIZE" -lt "$MIN_SIZE" ]; then
-                  echo "Existing file too small, removing."
-                  rm -f /models/model.gguf
-                fi
-              fi
+              MARKER=/models/.model-url
 
               FILENAME=$(basename "$MODEL_URL")
               ALIAS=$(echo "$FILENAME" | sed -E 's/\.gguf$//; s/[-_]/ /g')
               echo "$ALIAS" > /models/alias.txt
               echo "Derived alias: $ALIAS"
 
-              rm -f /models/model.gguf
+              if [ -f /models/model.gguf ] \
+                 && [ "$(cat "$MARKER" 2>/dev/null || true)" = "$MODEL_URL" ] \
+                 && [ "$(stat -c%s /models/model.gguf)" -ge "$MIN_SIZE" ]; then
+                echo "Model already present for this URL, skipping download."
+                exit 0
+              fi
+
+              rm -f /models/model.gguf /models/model.gguf.tmp
               echo "Downloading from $MODEL_URL..."
               curl -L --fail -o /models/model.gguf.tmp "$MODEL_URL"
               mv /models/model.gguf.tmp /models/model.gguf
+              echo "$MODEL_URL" > "$MARKER"
               echo "Download complete."
           volumeMounts:
             - name: models
